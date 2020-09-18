@@ -27,6 +27,7 @@ const initialUserData = {
   edit: false,
   games: [],
   resolutions: [],
+  tags: [],
 };
 
 /*
@@ -93,6 +94,7 @@ function userConfigReducer(state, action) {
         ...state,
         games: action.games.sort(),
         resolutions: action.resolutions.sort(),
+        tags: action.tags.sort(),
       };
     case 'ADD_GAME':
       return {
@@ -106,6 +108,11 @@ function userConfigReducer(state, action) {
           ...new Set(state.resolutions.concat(action.resolution)),
         ].sort(),
       };
+    case 'ADD_TAG':
+      return {
+        ...state,
+        tags: [...new Set(state.tags.concat(action.tag))].sort(),
+      };
     case 'REMOVE_GAME':
       return {
         ...state,
@@ -117,6 +124,11 @@ function userConfigReducer(state, action) {
         resolutions: state.resolutions.filter(
           (resolution) => resolution !== action.resolution,
         ),
+      };
+    case 'REMOVE_TAG':
+      return {
+        ...state,
+        tags: state.tags.filter((tag) => tag !== action.tag),
       };
     default:
       throw new Error(`Unhandled action type: ${action.type}`);

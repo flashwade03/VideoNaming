@@ -2,8 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 
 const DataTemplateBlock = styled.div`
-  width: 1280px;
-  height: 720px;
+  width: 960px;
+  height: 540px;
   position: relative;
   display: flex;
   background: white;

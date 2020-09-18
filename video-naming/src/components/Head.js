@@ -87,6 +87,7 @@ export default function Head({ children, onClickEditor }) {
       type: 'SET_CONFIG',
       games: configData.games,
       resolutions: configData.resolutions,
+      tags: configData.tags,
     });
   }
 
@@ -136,13 +137,16 @@ export default function Head({ children, onClickEditor }) {
       console.log(dataJSONStr);
       localStorage.setItem('storedData', dataJSONStr);
       console.log(2);
-      window.ipcRenderer.send('saveDataSet');
+      window.ipcRenderer.send('saveDataSet', dataJSONStr);
     }
   };
 
   return (
     <HeadBlock>
-      <h1>{(userConfig.username && userConfig.username) || children}</h1>
+      <h1>
+        {(userConfig.username && `안녕하세요. ${userConfig.username}`) ||
+          children}
+      </h1>
       <div className="form-group">
         <form onSubmit={onSubmit}>
           <label>

@@ -42,7 +42,7 @@ const ConfigItemBlock = styled.div`
   }
 `;
 
-export default function ConfigItem2({ name }) {
+export default function ConfigItem3({ name }) {
   const userDispatch = useUserConfigDispatch();
 
   const onClickDelete = () => {

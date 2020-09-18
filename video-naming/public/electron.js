@@ -5,7 +5,6 @@ const fs = require('fs');
 const url = require('url');
 
 let mainWindow;
-let selectedFiles = [];
 
 function setMainMenu() {
   const template = [
@@ -63,8 +62,8 @@ function setMainMenu() {
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 1920,
-    height: 1080,
+    width: 1000,
+    height: 660,
     webPreferences: { nodeIntegration: true },
   });
 
@@ -131,50 +130,54 @@ ipcMain.on('testCommand', (event, ...args) => {
 
 ipcMain.on('loadDataSet', (event, ...args) => {
   console.log(args);
-  const rawdata = fs.readFileSync(
-    path.resolve(app.getAppPath(), '../../../data_config.json'),
-  );
+  let configFilePath;
+  if (isDev) {
+    configFilePath = path.resolve(app.getAppPath(), 'public/data_config.json');
+  } else {
+    configFilePath = path.resolve(
+      app.getAppPath(),
+      '../../../data_config.json',
+    );
+  }
+
+  const rawdata = fs.readFileSync(configFilePath);
   const data = JSON.parse(rawdata);
   const dataStr = JSON.stringify(data);
-  mainWindow.webContents
-    .executeJavaScript(
-      `localStorage.setItem("storedData", '${dataStr}');`,
-      true,
-    )
-    .then((ret) => {
-      console.log('finished save data');
-      console.log(ret);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+
+  event.sender.send('finish-load-data', data);
 });
 
-ipcMain.on('saveDataSet', (event, ...args) => {
-  mainWindow.webContents
-    .executeJavaScript('localStorage.getItem("storedData");', true)
-    .then((result) => {
-      try {
-        fs.writeFileSync(
-          path.resolve(app.getAppPath(), '../../../data_config.json'),
-          result,
-        );
-        const options = {
-          detail: '설정 파일 저장을 완료했습니다.',
-        };
-        dialog.showMessageBox(null, options, (response, checkboxChecked) => {
-          console.log(response);
-        });
-      } catch (e) {
-        const options = {
-          detail: '설정 파일 저장에 실패했습니다.',
-        };
-        dialog.showMessageBox(null, options, (response, checkboxChecked) => {
-          console.log(response);
-        });
-        console.log(e);
-      }
+ipcMain.on('saveDataSet', (event, configData) => {
+  try {
+    let configFilePath;
+
+    if (isDev) {
+      configFilePath = path.resolve(
+        app.getAppPath(),
+        'public/data_config.json',
+      );
+    } else {
+      configFilePath = path.resolve(
+        app.getAppPath(),
+        '../../../data_config.json',
+      );
+    }
+    fs.writeFileSync(configFilePath, configData);
+    const options = {
+      detail: '설정 파일 저장을 완료했습니다.',
+    };
+    dialog.showMessageBox(null, options, (response, checkboxChecked) => {
+      console.log(response);
     });
+  } catch (e) {
+    const options = {
+      detail: '설정 파일 저장에 실패했습니다.',
+    };
+    dialog.showMessageBox(null, options, (response, checkboxChecked) => {
+      console.log(response);
+    });
+    console.log(e);
+  }
 });
 
 app.whenReady().then(() => {

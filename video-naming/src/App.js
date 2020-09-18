@@ -17,6 +17,15 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
+let loaded = false;
+
+window.ipcRenderer.on('finish-load-data', function (event, data) {
+  if (loaded) return;
+  const dataStr = JSON.stringify(data);
+  loaded = true;
+  localStorage.setItem('storedData', `${dataStr}`);
+});
+
 function App() {
   window.ipcRenderer.send('loadDataSet');
   const [edit, setEdit] = useState(false);

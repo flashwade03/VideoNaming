@@ -59,7 +59,7 @@ const InsertFormPositioner = styled.div`
 
 const InsertForm = styled.form`
   background: #f8f9fa;
-  width: 100%;
+
   padding: 32px;
   padding-bottom: 72px;
   border-bottom-left-radius: 16px;

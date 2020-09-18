@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled, { css } from 'styled-components';
 import { MdDoNotDisturbOn } from 'react-icons/md';
-import { useUserConfig, useUserConfigDispatch } from '../VideoDataContext';
+import { useUserConfigDispatch } from '../VideoDataContext';
 
 const CheckSquare = styled.div`
   width: 24px;

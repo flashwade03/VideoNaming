@@ -59,7 +59,6 @@ const InsertFormPositioner = styled.div`
 
 const InsertForm = styled.form`
   background: #f8f9fa;
-  width: 100%;
   padding: 32px;
   padding-bottom: 72px;
   border-bottom-left-radius: 16px;
@@ -99,6 +98,7 @@ export default function AddData() {
 
   let newGameStr;
   let newResolutionStr;
+  let newTagStr;
 
   const onToggle = () => {
     setOpen(!open);
@@ -130,6 +130,19 @@ export default function AddData() {
     newResolutionStr = null;
   };
 
+  const onChangeTagText = (e) => {
+    newTagStr = e.target.value;
+  };
+
+  const onSubmitNewTag = (e) => {
+    e.preventDefault();
+    dataDispatch({
+      type: 'ADD_RESOLUTION',
+      resolution: newResolutionStr,
+    });
+    newTagStr = null;
+  };
+
   return (
     <>
       {open && (
@@ -143,8 +156,15 @@ export default function AddData() {
           </InsertForm>
           <InsertForm onSubmit={onSubmitNewResolution}>
             <label>
-              New Resolutions : &nbsp;&nbsp;
+              New Resolution : &nbsp;&nbsp;
               <Input id="text" onChange={onChangeResolutionText} />
+              <Submit type="submit" />
+            </label>
+          </InsertForm>
+          <InsertForm onSubmit={onSubmitNewTag}>
+            <label>
+              New Tag : &nbsp;&nbsp;
+              <Input id="text" onChange={onChangeTagText} />
               <Submit type="submit" />
             </label>
           </InsertForm>

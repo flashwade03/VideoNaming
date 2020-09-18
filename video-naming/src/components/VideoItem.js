@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled, { css } from 'styled-components';
+import Select from 'react-select';
 import {
   MdPlayArrow,
   MdDelete,
@@ -109,25 +110,43 @@ const RenameInputForm = styled.form`
   border-bottom-right-radius: 15px;
   border-top: 1px solid #e9ecef;
 
-  label {
-    margin-right: 15px;
-
-    & + & {
-      maring-left: 20px;
-    }
-  }
-
   .result {
     display: block;
     background: red;
+  }
+`;
+const UpperInputGroup = styled.div`
+  display: flex;
+`;
+
+const UnderInputGroup = styled.div`
+  display: flex;
+  margin-bottom: 10px;
+  label + span {
+    margin-left: 10px;
+  }
+`;
+
+const GameSelect = styled.div`
+  margin: 10px;
+  width: 250px;
+  .select-label {
+    font-size: 20px;
+  }
+`;
+
+const TagSelect = styled.div`
+  margin: 10px;
+  width: 150px;
+  .select-label {
+    font-size: 20px;
   }
 `;
 
 let game = '';
 let resolution = '';
 let date = '';
-let isPlayScene = '';
-let otherTags = '';
+let tags = '';
 let extra = '';
 
 export default function VideoItem({
@@ -150,8 +169,7 @@ export default function VideoItem({
     game = '';
     resolution = '';
     date = '';
-    isPlayScene = '';
-    otherTags = '';
+    tags = '';
     extra = '';
   };
 
@@ -225,13 +243,8 @@ export default function VideoItem({
       ret += '-' + userConfig.username;
     }
 
-    if (isPlayScene) {
-      ret += '-' + 'A1';
-    }
-
-    if (otherTags !== '') {
-      if (isPlayScene) ret += otherTags;
-      else ret += '-' + otherTags;
+    if (tags !== '') {
+      ret += '-' + tags;
     }
 
     if (extra !== '') {
@@ -242,15 +255,15 @@ export default function VideoItem({
   };
 
   const onSetGame = (event) => {
-    game = event.target.value;
-    console.log(newName);
+    game = event.value;
     mergeNameElements();
+    console.log(newName);
   };
 
   const onSetResolution = (event) => {
-    resolution = event.target.value;
-    console.log(resolution);
+    resolution = event.value;
     mergeNameElements();
+    console.log(resolution);
   };
 
   const onSetDate = (event) => {
@@ -261,14 +274,13 @@ export default function VideoItem({
     console.log(newName);
   };
 
-  const onSetPlayScene = (event) => {
-    console.log(event.target.checked);
-    isPlayScene = event.target.checked;
-    mergeNameElements();
-  };
-
-  const onSetOtherTags = (event) => {
-    otherTags = event.target.value;
+  const onSetTag = (event) => {
+    console.log(event);
+    tags = '';
+    event.map((tag) => {
+      if (tags === '') tags += tag.value;
+      else tags += `@${tag.value}`;
+    });
     mergeNameElements();
   };
 
@@ -303,47 +315,61 @@ export default function VideoItem({
       {edit && (
         <RenameInputFormPositioner>
           <RenameInputForm>
-            <label>
-              Game:
-              <select name="games" autoComplete="true" onChange={onSetGame}>
-                {userConfig.games.map((game) => (
-                  <option key={game} value={game}>
-                    {game}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label>
-              resolution:
-              <select
-                name="resolution"
-                autoComplete="true"
-                onChange={onSetResolution}
-              >
-                {userConfig.resolutions.map((resolution) => (
-                  <option key={resolution} value={resolution}>
-                    {resolution}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label>
-              date:
-              <input type="date" onChange={onSetDate} />
-            </label>
-            <label>
-              play scene?
-              <input type="checkbox" onChange={onSetPlayScene} />
-            </label>
-            <label>
-              other tags:
-              <input type="text" onChange={onSetOtherTags} />
-            </label>
-            <label>
-              extra :
-              <input type="text" onChange={onSetExtra} />
-            </label>
-            <span>Creator: {userConfig.username}</span>
+            <UpperInputGroup>
+              <GameSelect>
+                <label className="select-label">
+                  Game:
+                  <Select
+                    name="game"
+                    options={userConfig.games.map((game) => {
+                      return { value: game, label: game };
+                    })}
+                    onChange={onSetGame}
+                  />
+                </label>
+              </GameSelect>
+              <TagSelect>
+                <label className="select-label">
+                  Resolution:
+                  <Select
+                    name="resolution"
+                    options={userConfig.resolutions.map((resolution) => {
+                      return { value: resolution, label: resolution };
+                    })}
+                    onChange={onSetResolution}
+                  />
+                </label>
+              </TagSelect>
+              <TagSelect>
+                <label className="select-label">
+                  date:
+                  <br />
+                  <input type="date" onChange={onSetDate} height="38px" />
+                </label>
+              </TagSelect>
+
+              <TagSelect>
+                <label className="select-label">
+                  tag:
+                  <Select
+                    isMulti
+                    name="tag"
+                    options={userConfig.tags.map((tag) => {
+                      return { value: tag, label: tag };
+                    })}
+                    onChange={onSetTag}
+                  />
+                </label>
+              </TagSelect>
+            </UpperInputGroup>
+            <UnderInputGroup>
+              <label>
+                extra :
+                <input type="text" onChange={onSetExtra} />
+              </label>
+              <span>Creator: {userConfig.username}</span>
+            </UnderInputGroup>
+
             <span className="result">Result : {newName}</span>
             <Button onClick={onClickChangeName}>
               <MdDone />
